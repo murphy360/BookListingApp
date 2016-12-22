@@ -21,7 +21,7 @@ import java.util.ArrayList;
  */
 public final class QueryUtils {
 
-    private static final String TAG = "QUERYUTILS";
+    private static final String TAG = "QueryUtils: ";
 
 
     /**
@@ -93,6 +93,18 @@ public final class QueryUtils {
         }
         return jsonResponse;
     }
+    /**
+     * Returns new URL object from the given string URL.
+     */
+    private static URL createUrl(String stringUrl) {
+        URL url = null;
+        try {
+            url = new URL(stringUrl);
+        } catch (MalformedURLException e) {
+            Log.e(TAG, "Error with creating URL ", e);
+        }
+        return url;
+    }
 
     /**
      * Make an HTTP request to the given URL and return a String as the response.
@@ -134,24 +146,6 @@ public final class QueryUtils {
         }
         return jsonResponse;
     }
-
-    /**
-     * Returns new URL object from the given string URL.
-     */
-    private static URL createUrl(String stringUrl) {
-        URL url = null;
-        try {
-            url = new URL(stringUrl);
-        } catch (MalformedURLException e) {
-            Log.e(TAG, "Error with creating URL ", e);
-        }
-        return url;
-    }
-
-
-
-
-
 
     /**
      * Convert the {@link InputStream} into a String which contains the
