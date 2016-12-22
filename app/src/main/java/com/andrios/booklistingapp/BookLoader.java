@@ -27,9 +27,9 @@ public class BookLoader extends AsyncTaskLoader<ArrayList<Book>> {
 
     @Override
     public ArrayList<Book> loadInBackground() {
-        ArrayList<Book> earthquakes = QueryUtils.extractBooks(mUrl);
-        //earthquakes.clear();//TODO TEST LINE if no earthquakes returned.
+        ArrayList<Book> books = QueryUtils.extractBooks(mUrl);
+        //books.clear();//TODO TEST LINE if no books returned.
 
-        return earthquakes;
+        return books;
     }
 }

@@ -1,8 +1,10 @@
 package com.andrios.booklistingapp;
 
+import android.app.LoaderManager;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.Loader;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -23,6 +25,7 @@ import android.widget.TextView;
 
 import com.andrios.booklistingapp.dummy.DummyContent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,8 +36,9 @@ import java.util.List;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class BookListActivity extends AppCompatActivity {
+public class BookListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<Book>> {
 
+    private static final int BOOK_LOADER_ID = 1;
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
@@ -73,7 +77,13 @@ public class BookListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
+
+
         Log.d(TAG, "onCreate: ");
+        if(!isNetworkConnected()){
+            TextView emptyView = (TextView) findViewById(R.id.emptytext);
+            emptyView.setText("No Network Connectivity");
+        }
     }
 
 
@@ -103,7 +113,10 @@ public class BookListActivity extends AppCompatActivity {
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            Log.d(TAG, "handleIntent: " + query);
+            Bundle b = new Bundle();
+            b.putString("query", query);
+            Log.d(TAG, "handleIntent: "+ b.get("query"));
+            getLoaderManager().initLoader(BOOK_LOADER_ID,b,this).forceLoad();
         }
     }
 
@@ -113,6 +126,26 @@ public class BookListActivity extends AppCompatActivity {
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
         //TODO Hide recycler View if Dataset is empty
         //TODO Check if network connectivity, hide
+    }
+
+    @Override
+    public Loader<ArrayList<Book>> onCreateLoader(int id, Bundle args) {
+        String baseUrl = "https://www.googleapis.com/books/v1/volumes?q=";
+        String maxResultsUrl = "&maxResults=1";
+        String query = args.getString("query");
+        Log.d(TAG, "onCreateLoader: " + query);
+        String mUrl = baseUrl+query+maxResultsUrl;
+        return new BookLoader(this, mUrl);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<ArrayList<Book>> loader, ArrayList<Book> data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<ArrayList<Book>> loader) {
+
     }
 
     public class SimpleItemRecyclerViewAdapter

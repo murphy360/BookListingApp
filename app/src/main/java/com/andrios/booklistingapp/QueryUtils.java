@@ -48,7 +48,7 @@ public final class QueryUtils {
         try {
 
             JSONObject response = new JSONObject(fetchJsonResponse(requestUrl));
-
+            Log.d(TAG, "extractBooks: " + response.toString());
             JSONArray bookObjects = response.getJSONArray("features");
             Log.d(TAG, bookObjects.toString());
             for(int i = 0; i<bookObjects.length(); i++){
@@ -57,13 +57,15 @@ public final class QueryUtils {
                 //TODO Parse Books API Response
                 Log.d(TAG + " Book: ", e.toString());
                 JSONObject properties = e.getJSONObject("properties");
-                Log.d(TAG + " Properties: ", properties.toString());
+                Log.d(TAG, "extractBooks: " + properties.toString());
+                /**
                 Double mag = properties.getDouble("mag");
                 Log.d(TAG + " mag: ", mag.toString());
                 String location = properties.getString("place");
                 Long timeMil = properties.getLong("time");
 
                 String url = properties.getString("url");
+                 **/
                 books.add(new Book());
             }
 
