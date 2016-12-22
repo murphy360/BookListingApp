@@ -49,24 +49,28 @@ public final class QueryUtils {
 
             JSONObject response = new JSONObject(fetchJsonResponse(requestUrl));
             Log.d(TAG, "extractBooks: " + response.toString());
-            JSONArray bookObjects = response.getJSONArray("features");
+            JSONArray bookObjects = response.getJSONArray("items");
             Log.d(TAG, bookObjects.toString());
             for(int i = 0; i<bookObjects.length(); i++){
-                JSONObject e = bookObjects.getJSONObject(i);
+                JSONObject bookObject = bookObjects.getJSONObject(i);
+                JSONObject volumeInfo = bookObject.getJSONObject("volumeInfo");
+                String id = bookObject.getString("id");
+                String title = volumeInfo.getString("title");
+                JSONArray authors = volumeInfo.getJSONArray("authors");
+                ArrayList<String> authorList = new ArrayList<>();
+                for(int j = 0; j < authors.length(); j++){
+                    authorList.add(authors.getString(j));
+                }
+                String publisher = volumeInfo.getString("publisher");
+                String publishDate = volumeInfo.getString("publishedDate");
+                String description = volumeInfo.getString("description");
+                JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
+                String smallThumbUrl = imageLinks.getString("smallThumbnail");
+                String thumbUrl = imageLinks.getString("thumbnail");
 
-                //TODO Parse Books API Response
-                Log.d(TAG + " Book: ", e.toString());
-                JSONObject properties = e.getJSONObject("properties");
-                Log.d(TAG, "extractBooks: " + properties.toString());
-                /**
-                Double mag = properties.getDouble("mag");
-                Log.d(TAG + " mag: ", mag.toString());
-                String location = properties.getString("place");
-                Long timeMil = properties.getLong("time");
 
-                String url = properties.getString("url");
-                 **/
-                books.add(new Book());
+                books.add(new Book(id, title, authorList, publisher, publishDate, description, smallThumbUrl, thumbUrl));
+                Log.d(TAG, "extractBooks: Added Book" + books.get(i).getTitle());
             }
 
         } catch (JSONException e) {

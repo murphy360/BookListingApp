@@ -4,12 +4,20 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
+
     <TextView
         android:id="@+id/emptytext"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="emptytext" />
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="88dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal" />
+
 
     <android.support.v7.widget.RecyclerView xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -24,12 +32,7 @@
 
     </android.support.v7.widget.RecyclerView>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="88dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal" />
+
 
 
 

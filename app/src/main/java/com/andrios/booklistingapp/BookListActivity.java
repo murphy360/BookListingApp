@@ -21,12 +21,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.andrios.booklistingapp.dummy.DummyContent;
-
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * An activity representing a list of Books. This activity
@@ -46,6 +44,17 @@ public class BookListActivity extends AppCompatActivity implements LoaderManager
     private boolean mTwoPane;
     private static final String TAG = "Book List Activity: ";
 
+    private static final int PROGRESS = 0;
+    private static final int EMPTY_TEXT = 1;
+    private static final int LIST_VIEW = 2;
+    private static final int NETWORK_ERROR = 3;
+
+    ProgressBar progressBar;
+    TextView emptyText;
+    RecyclerView recyclerView;
+
+    SimpleItemRecyclerViewAdapter mAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +73,10 @@ public class BookListActivity extends AppCompatActivity implements LoaderManager
             }
         });
 
-        View recyclerView = findViewById(R.id.book_list);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        emptyText = (TextView) findViewById(R.id.emptytext);
+
+        recyclerView = (RecyclerView) findViewById(R.id.book_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
 
@@ -81,8 +93,9 @@ public class BookListActivity extends AppCompatActivity implements LoaderManager
 
         Log.d(TAG, "onCreate: ");
         if(!isNetworkConnected()){
-            TextView emptyView = (TextView) findViewById(R.id.emptytext);
-            emptyView.setText("No Network Connectivity");
+            setView(NETWORK_ERROR);
+        }else{
+            setView(EMPTY_TEXT);
         }
     }
 
@@ -120,10 +133,36 @@ public class BookListActivity extends AppCompatActivity implements LoaderManager
         }
     }
 
+    private void setView(int whichView){
+        if(whichView == PROGRESS){
+            progressBar.setVisibility(View.VISIBLE);
+            emptyText.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
+        }else if(whichView == EMPTY_TEXT){
+
+            progressBar.setVisibility(View.GONE);
+            emptyText.setVisibility(View.VISIBLE);
+            emptyText.setText("No Results");
+            recyclerView.setVisibility(View.GONE);
+        }else if(whichView == NETWORK_ERROR){
+
+            progressBar.setVisibility(View.GONE);
+            emptyText.setVisibility(View.VISIBLE);
+            emptyText.setText("No Network");
+            recyclerView.setVisibility(View.GONE);
+        }else if(whichView == LIST_VIEW){
+
+            progressBar.setVisibility(View.GONE);
+            emptyText.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
 
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+        mAdapter = new SimpleItemRecyclerViewAdapter(new ArrayList<Book>());
+        recyclerView.setAdapter(mAdapter);
         //TODO Hide recycler View if Dataset is empty
         //TODO Check if network connectivity, hide
     }
@@ -131,16 +170,22 @@ public class BookListActivity extends AppCompatActivity implements LoaderManager
     @Override
     public Loader<ArrayList<Book>> onCreateLoader(int id, Bundle args) {
         String baseUrl = "https://www.googleapis.com/books/v1/volumes?q=";
-        String maxResultsUrl = "&maxResults=1";
+        String maxResultsUrl = "&maxResults=2";
+        //TODO Allow user to choose Max Results
         String query = args.getString("query");
         Log.d(TAG, "onCreateLoader: " + query);
         String mUrl = baseUrl+query+maxResultsUrl;
         return new BookLoader(this, mUrl);
+
     }
 
     @Override
     public void onLoadFinished(Loader<ArrayList<Book>> loader, ArrayList<Book> data) {
-
+        Log.d(TAG, "onLoadFinished: ");
+        if(data.size() > 0){
+            setView(LIST_VIEW);
+            mAdapter.add(data);
+        }
     }
 
     @Override
@@ -151,9 +196,9 @@ public class BookListActivity extends AppCompatActivity implements LoaderManager
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<DummyContent.DummyItem> mValues;
+        private final ArrayList<Book> mValues;
 
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
+        public SimpleItemRecyclerViewAdapter(ArrayList<Book> items) {
             mValues = items;
         }
 
@@ -167,15 +212,15 @@ public class BookListActivity extends AppCompatActivity implements LoaderManager
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            holder.mIdView.setText(mValues.get(position).getId());
+            holder.mContentView.setText(mValues.get(position).getTitle());
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putString(BookDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        arguments.putString(BookDetailFragment.ARG_ITEM_ID, holder.mItem.getId());
                         BookDetailFragment fragment = new BookDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -184,7 +229,7 @@ public class BookListActivity extends AppCompatActivity implements LoaderManager
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, BookDetailActivity.class);
-                        intent.putExtra(BookDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        intent.putExtra(BookDetailFragment.ARG_ITEM_ID, holder.mItem.getId());
 
                         context.startActivity(intent);
                     }
@@ -197,11 +242,17 @@ public class BookListActivity extends AppCompatActivity implements LoaderManager
             return mValues.size();
         }
 
+        public void add(ArrayList<Book> data) {
+            mValues.clear();
+            mValues.addAll(data);
+            notifyDataSetChanged();
+        }
+
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
             public final TextView mIdView;
             public final TextView mContentView;
-            public DummyContent.DummyItem mItem;
+            public Book mItem;
 
             public ViewHolder(View view) {
                 super(view);
