@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -129,7 +130,12 @@ public class BookListActivity extends AppCompatActivity implements LoaderManager
             Bundle b = new Bundle();
             b.putString("query", query);
             Log.d(TAG, "handleIntent: "+ b.get("query"));
-            getLoaderManager().initLoader(BOOK_LOADER_ID,b,this).forceLoad();
+
+            if(getLoaderManager().getLoader(BOOK_LOADER_ID) == null){
+                getLoaderManager().initLoader(BOOK_LOADER_ID,b,this).forceLoad();
+            }else{
+                getLoaderManager().restartLoader(BOOK_LOADER_ID,b,this).forceLoad();
+            }
         }
     }
 
@@ -175,22 +181,29 @@ public class BookListActivity extends AppCompatActivity implements LoaderManager
         String query = args.getString("query");
         Log.d(TAG, "onCreateLoader: " + query);
         String mUrl = baseUrl+query+maxResultsUrl;
+
+        setView(PROGRESS);
         return new BookLoader(this, mUrl);
 
     }
 
     @Override
     public void onLoadFinished(Loader<ArrayList<Book>> loader, ArrayList<Book> data) {
-        Log.d(TAG, "onLoadFinished: ");
+        Log.d(TAG, "onLoadFinished: " + data.size());
         if(data.size() > 0){
+            Log.d(TAG, "onLoadFinished: data ");
             setView(LIST_VIEW);
             mAdapter.add(data);
+            mAdapter.notifyDataSetChanged();
+        }else{
+            mAdapter.clear();
+            mAdapter.notifyDataSetChanged();
         }
     }
 
     @Override
     public void onLoaderReset(Loader<ArrayList<Book>> loader) {
-
+        Log.d(TAG, "onLoaderReset: ");
     }
 
     public class SimpleItemRecyclerViewAdapter
@@ -211,10 +224,13 @@ public class BookListActivity extends AppCompatActivity implements LoaderManager
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
+            holder.mImageView.setImageDrawable(null);
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(mValues.get(position).getId());
             holder.mContentView.setText(mValues.get(position).getTitle());
 
+
+            holder.mImageView.setImageDrawable(null);
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -243,21 +259,30 @@ public class BookListActivity extends AppCompatActivity implements LoaderManager
         }
 
         public void add(ArrayList<Book> data) {
+            Log.d(TAG, "add: " + mValues.size());
             mValues.clear();
+            Log.d(TAG, "add: " + mValues.size());
             mValues.addAll(data);
-            notifyDataSetChanged();
+            Log.d(TAG, "add: " + mValues.size());
+        }
+
+        public void clear() {
+            mValues.clear();
+            setView(EMPTY_TEXT);
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
             public final TextView mIdView;
             public final TextView mContentView;
+            public final ImageView mImageView;
             public Book mItem;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
                 mIdView = (TextView) view.findViewById(R.id.id);
+                mImageView = (ImageView) view.findViewById(R.id.imageView);
                 mContentView = (TextView) view.findViewById(R.id.content);
             }
 
