@@ -128,18 +128,23 @@ public class BookListActivity extends AppCompatActivity
     private void handleIntent(Intent intent) {
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            Bundle b = new Bundle();
-            b.putString("query", query);
-            Log.d(TAG, "handleIntent: "+ b.get("query"));
-
-            if(getLoaderManager().getLoader(BOOK_LOADER_ID) == null){
-                Log.d(TAG, "handleIntent: Loader == Null");
-                getLoaderManager().initLoader(BOOK_LOADER_ID,b,this).forceLoad();
+            if(!isNetworkConnected()){
+                setView(NETWORK_ERROR);
             }else{
-                Log.d(TAG, "handleIntent: Loader != Null");
-                getLoaderManager().restartLoader(BOOK_LOADER_ID,b,this).forceLoad();
+                String query = intent.getStringExtra(SearchManager.QUERY);
+                Bundle b = new Bundle();
+                b.putString("query", query);
+                Log.d(TAG, "handleIntent: "+ b.get("query"));
+
+                if(getLoaderManager().getLoader(BOOK_LOADER_ID) == null){
+                    Log.d(TAG, "handleIntent: Loader == Null");
+                    getLoaderManager().initLoader(BOOK_LOADER_ID,b,this).forceLoad();
+                }else{
+                    Log.d(TAG, "handleIntent: Loader != Null");
+                    getLoaderManager().restartLoader(BOOK_LOADER_ID,b,this).forceLoad();
+                }
             }
+
         }
     }
 
