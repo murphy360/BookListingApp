@@ -25,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -230,10 +231,11 @@ public class BookListActivity extends AppCompatActivity
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mImageView.setImageResource(R.drawable.ic_search_black_24dp);
+            //holder.mImageView.setImageResource(R.drawable.placeholder_book);
             holder.mItem = mValues.get(position);
             holder.mAuthorView.setText(holder.mItem.getAuthor());
             holder.mContentView.setText(mValues.get(position).getTitle());
+
 
             BitmapWorkerTask asyncBitmap = new BitmapWorkerTask(holder.mImageView, getApplicationContext(), holder.mItem);
             asyncBitmap.execute();
@@ -308,5 +310,29 @@ public class BookListActivity extends AppCompatActivity
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
+        File dir = this.getCacheDir();
+        if (dir != null && dir.isDirectory()) {
+            deleteDir(dir);
+        }
+
+    }
+    public static boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory())
+        {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        return dir.delete();
     }
 }
