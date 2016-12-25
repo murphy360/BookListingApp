@@ -15,18 +15,24 @@
         <TextView
             android:id="@+id/content"
             android:text="Title: "
+            android:maxLines = "2"
+            android:minLines = "2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/text_margin"
+            android:layout_marginStart="@dimen/text_margin"
+            android:layout_marginLeft="@dimen/text_margin"
             android:textAppearance="?attr/textAppearanceListItem" />
 
         <TextView
             android:id="@+id/id"
             android:text="ISBN: "
+            android:maxLines = "1"
+            android:minLines = "1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/text_margin"
             android:textAppearance="?attr/textAppearanceListItem"
+            android:layout_marginTop="5dp"
             android:layout_marginLeft="@dimen/text_margin" />
 
     </LinearLayout>
