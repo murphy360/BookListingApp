@@ -1,6 +1,7 @@
 package com.andrios.booklistingapp;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -18,7 +19,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
@@ -37,51 +37,49 @@ public final class QueryUtils {
      */
     private QueryUtils() {
     }
-    public static Bitmap downloadImage(String mUrl) {
-        String PATH = "/data/data/com.helloandroid.imagedownloader/";  //put the downloaded file here
 
+    public void DownloadFromUrl(String imageURL, String fileName) {  //this is the downloader method
+        try {
+            URL url = new URL("http://yoursite.com/&quot; + imageURL");
+            File file = new File(fileName);
 
-        public void DownloadFromUrl(String imageURL, String fileName) {  //this is the downloader method
-            try {
-                URL url = new URL("http://yoursite.com/&quot; + imageURL");
-                        File file = new File(fileName);
-
-                long startTime = System.currentTimeMillis();
-                Log.d("ImageManager", "download begining");
-                Log.d("ImageManager", "download url:" + url);
-                Log.d("ImageManager", "downloaded file name:" + fileName);
+            long startTime = System.currentTimeMillis();
+            Log.d("ImageManager", "download begining");
+            Log.d("ImageManager", "download url:" + url);
+            Log.d("ImageManager", "downloaded file name:" + fileName);
                         /* Open a connection to that URL. */
-                URLConnection ucon = url.openConnection();
+            URLConnection ucon = url.openConnection();
 
                         /*
                          * Define InputStreams to read from the URLConnection.
                          */
-                InputStream is = ucon.getInputStream();
-                BufferedInputStream bis = new BufferedInputStream(is);
-
-                        /*
-                         * Read bytes to the Buffer until there is nothing more to read(-1).
-                         */
-                ByteBuffer baf = new ByteBuffer(50);
-                int current = 0;
-                while ((current = bis.read()) != -1) {
-                    baf.append((byte) current);
-                }
-
-                        /* Convert the Bytes read to a String. */
-                FileOutputStream fos = new FileOutputStream(file);
-                fos.write(baf.toByteArray());
-                fos.close();
-                Log.d("ImageManager", "download ready in"
-                        + ((System.currentTimeMillis() - startTime) / 1000)
-                        + " sec");
-
-            } catch (IOException e) {
-                Log.d("ImageManager", "Error: " + e);
+            InputStream is = ucon.getInputStream();
+            BufferedInputStream bis = new BufferedInputStream(is);
+            FileOutputStream fos = new FileOutputStream(file);
+            int current = 0;
+            while ((current = bis.read()) != -1) {
+                fos.write(current);
             }
 
+            fos.close();
+
+
+        } catch (IOException e) {
+            Log.d("ImageManager", "Error: " + e);
         }
 
+    }
+
+    public static Bitmap downloadImage(String requestUrl) {
+        URL url = createUrl(requestUrl);
+        Bitmap b = null;
+        try {
+            Log.d(TAG, "downloadImage: MakeImageHttpRequest");
+            b = makeImageHttpRequest(url);
+        } catch (IOException e) {
+            Log.e(TAG, "Error closing input stream", e);
+        }
+        return b;
     }
 
     /**
@@ -188,6 +186,7 @@ public final class QueryUtils {
             // then read the input stream and parse the response.
             if (urlConnection.getResponseCode() == 200) {
                 inputStream = urlConnection.getInputStream();
+
                 jsonResponse = readFromStream(inputStream);
             } else {
                 Log.e(TAG, "Error response code: " + urlConnection.getResponseCode());
@@ -203,6 +202,41 @@ public final class QueryUtils {
             }
         }
         return jsonResponse;
+    }
+
+    private static Bitmap makeImageHttpRequest(URL url) throws IOException {
+        Log.d(TAG, "makeImageHttpRequest: ");
+
+        HttpURLConnection urlConnection = null;
+        InputStream inputStream = null;
+        Bitmap bitmap = null;
+        try {
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setReadTimeout(10000 /* milliseconds */);
+            urlConnection.setConnectTimeout(15000 /* milliseconds */);
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+
+            // If the request was successful (response code 200),
+            // then read the input stream and parse the response.
+            if (urlConnection.getResponseCode() == 200) {
+                inputStream = urlConnection.getInputStream();
+
+                bitmap = BitmapFactory.decodeStream(inputStream);
+            } else {
+                Log.e(TAG, "Error response code: " + urlConnection.getResponseCode());
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "Problem retrieving the Book JSON results.", e);
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        }
+        return bitmap;
     }
 
     /**
@@ -222,6 +256,7 @@ public final class QueryUtils {
         }
         return output.toString();
     }
+
 
 
 }

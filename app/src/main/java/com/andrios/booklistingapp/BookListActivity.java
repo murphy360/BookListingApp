@@ -35,7 +35,8 @@ import java.util.ArrayList;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class BookListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<Book>> {
+public class BookListActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<ArrayList<Book>>{
 
     private static final int BOOK_LOADER_ID = 1;
     /**
@@ -132,8 +133,10 @@ public class BookListActivity extends AppCompatActivity implements LoaderManager
             Log.d(TAG, "handleIntent: "+ b.get("query"));
 
             if(getLoaderManager().getLoader(BOOK_LOADER_ID) == null){
+                Log.d(TAG, "handleIntent: Loader == Null");
                 getLoaderManager().initLoader(BOOK_LOADER_ID,b,this).forceLoad();
             }else{
+                Log.d(TAG, "handleIntent: Loader != Null");
                 getLoaderManager().restartLoader(BOOK_LOADER_ID,b,this).forceLoad();
             }
         }
@@ -176,7 +179,7 @@ public class BookListActivity extends AppCompatActivity implements LoaderManager
     @Override
     public Loader<ArrayList<Book>> onCreateLoader(int id, Bundle args) {
         String baseUrl = "https://www.googleapis.com/books/v1/volumes?q=";
-        String maxResultsUrl = "&maxResults=2";
+        String maxResultsUrl = "&maxResults=30";
         //TODO Allow user to choose Max Results
         String query = args.getString("query");
         Log.d(TAG, "onCreateLoader: " + query);
@@ -224,13 +227,14 @@ public class BookListActivity extends AppCompatActivity implements LoaderManager
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mImageView.setImageDrawable(null);
+            holder.mImageView.setImageResource(R.drawable.ic_search_black_24dp);
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(mValues.get(position).getId());
             holder.mContentView.setText(mValues.get(position).getTitle());
 
+            BitmapWorkerTask asyncBitmap = new BitmapWorkerTask(holder.mImageView, getApplicationContext(), holder.mItem);
+            asyncBitmap.execute();
 
-            holder.mImageView.setImageDrawable(null);
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

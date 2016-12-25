@@ -1,5 +1,8 @@
 package com.andrios.booklistingapp;
 
+import android.content.Context;
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -8,7 +11,7 @@ import java.util.ArrayList;
 
 public class Book extends Object {
 
-
+private static final String TAG = "Book: ";
     private String id;
     private String title;
     private ArrayList<String> authorList;
@@ -17,6 +20,7 @@ public class Book extends Object {
     private String description;
     private String smallThumbUrl;
     private String thumbUrl;
+    private String filePath;
 
     public Book(String id, String title, ArrayList<String> authorList, String publisher, String publishDate, String description, String smallThumbUrl, String thumbUrl) {
 
@@ -38,4 +42,16 @@ public class Book extends Object {
     public String getTitle() {
         return title;
     }
+
+    public String getImageUrl() {
+        return thumbUrl;
+    }
+
+
+    public String getFilePath(Context context) {
+        Log.d(TAG, "getFilePath: " +  context.getCacheDir() + "/" + id);
+        return context.getCacheDir() + "/" + id;
+    }
+
+
 }
