@@ -170,8 +170,11 @@ public class BookListActivity extends AppCompatActivity
 
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+
+
         mAdapter = new SimpleItemRecyclerViewAdapter(new ArrayList<Book>());
         recyclerView.setAdapter(mAdapter);
+
         //TODO Hide recycler View if Dataset is empty
         //TODO Check if network connectivity, hide
     }
@@ -238,21 +241,24 @@ public class BookListActivity extends AppCompatActivity
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mTwoPane) {
-                        Bundle arguments = new Bundle();
-                        arguments.putString(BookDetailFragment.ARG_ITEM_ID, holder.mItem.getId());
-                        BookDetailFragment fragment = new BookDetailFragment();
-                        fragment.setArguments(arguments);
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.book_detail_container, fragment)
-                                .commit();
-                    } else {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, BookDetailActivity.class);
-                        intent.putExtra(BookDetailFragment.ARG_ITEM_ID, holder.mItem.getId());
+                    //TODO Not required in scope of project
+                    /**
+                     *  if (mTwoPane) {
+                     Bundle arguments = new Bundle();
+                     arguments.putString(BookDetailFragment.ARG_ITEM_ID, holder.mItem.getId());
+                     BookDetailFragment fragment = new BookDetailFragment();
+                     fragment.setArguments(arguments);
+                     getSupportFragmentManager().beginTransaction()
+                     .replace(R.id.book_detail_container, fragment)
+                     .commit();
+                     } else {
+                     Context context = v.getContext();
+                     Intent intent = new Intent(context, BookDetailActivity.class);
+                     intent.putExtra(BookDetailFragment.ARG_ITEM_ID, holder.mItem.getId());
 
-                        context.startActivity(intent);
-                    }
+                     context.startActivity(intent);
+                     }
+                     */
                 }
             });
         }

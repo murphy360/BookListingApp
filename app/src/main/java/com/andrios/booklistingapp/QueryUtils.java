@@ -106,14 +106,30 @@ public final class QueryUtils {
                 JSONObject volumeInfo = bookObject.getJSONObject("volumeInfo");
                 String id = bookObject.getString("id");
                 String title = volumeInfo.getString("title");
-                JSONArray authors = volumeInfo.getJSONArray("authors");
                 ArrayList<String> authorList = new ArrayList<>();
-                for(int j = 0; j < authors.length(); j++){
-                    authorList.add(authors.getString(j));
+                if (volumeInfo.has("authors") && !volumeInfo.isNull("authors")) {
+                    JSONArray authors = volumeInfo.getJSONArray("authors");
+                    for(int j = 0; j < authors.length(); j++){
+                        authorList.add(authors.getString(j));
+                    }
+                }else{
+                   authorList.add("No Authors Listed");
                 }
-                String publisher = volumeInfo.getString("publisher");
+
+                String publisher;
+                if (volumeInfo.has("publisher") && !volumeInfo.isNull("publisher")) {
+                    publisher = volumeInfo.getString("publisher");
+                }else{
+                    publisher = "Publisher not Listed";
+                }
                 String publishDate = volumeInfo.getString("publishedDate");
-                String description = volumeInfo.getString("description");
+
+                String description;
+                if (volumeInfo.has("description") && !volumeInfo.isNull("description")) {
+                    description = volumeInfo.getString("description");
+                }else{
+                    description = "No Description Listed";
+                }
                 JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
                 String smallThumbUrl = imageLinks.getString("smallThumbnail");
                 String thumbUrl = imageLinks.getString("thumbnail");
