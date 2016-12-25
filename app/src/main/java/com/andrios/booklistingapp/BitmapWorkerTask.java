@@ -40,7 +40,7 @@ class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
     protected Bitmap doInBackground(Integer... params) {
         Bitmap b;
         Log.d(TAG, "doInBackground: Book ID: " + book.getFilePath(context));
-        File file = new File(context.getCacheDir(), book.getFilePath(context));
+        File file = new File(book.getFilePath(context));
         if(file.exists()){
             Log.d(TAG, "doInBackground: File Exists");
             b = decodeSampledBitmapFromFile(file, 100, 100);
@@ -52,6 +52,14 @@ class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
         return b;
     }
 
+    @Override
+    protected void onPreExecute(){
+        File file = new File(book.getFilePath(context));
+        if(!file.exists()) {
+            final ImageView imageView = imageViewReference.get();
+            imageView.setImageResource(R.drawable.placeholder_book);
+        }
+    }
 
     // Once complete, see if ImageView is still around and set bitmap.
     @Override
@@ -63,7 +71,7 @@ class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
                     getBitmapWorkerTask(imageView);
 
             Log.d(TAG, "onPostExecute: this == workertask" + this.equals(bitmapWorkerTask) );
-            Log.d(TAG, "imageView != null" + imageView.equals(null));
+            Log.d(TAG, "imageView != null " + imageView.equals(null));
             //TODO Examples had me checking this:  if (this == bitmapWorkerTask && imageView != null) {
             imageView.setImageBitmap(bitmap);
 
@@ -107,6 +115,8 @@ class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
                 e.printStackTrace();
             }
         }
+        f = new File(filename);
+        Log.d(TAG, "writeBitmapToFile: Does file exist?" + f.exists());
     }
 
     public static int calculateInSampleSize(
