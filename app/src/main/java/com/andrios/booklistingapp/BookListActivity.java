@@ -229,7 +229,7 @@ public class BookListActivity extends AppCompatActivity
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mImageView.setImageResource(R.drawable.ic_search_black_24dp);
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).getId());
+            holder.mAuthorView.setText(holder.mItem.getAuthor());
             holder.mContentView.setText(mValues.get(position).getTitle());
 
             BitmapWorkerTask asyncBitmap = new BitmapWorkerTask(holder.mImageView, getApplicationContext(), holder.mItem);
@@ -277,7 +277,7 @@ public class BookListActivity extends AppCompatActivity
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
-            public final TextView mIdView;
+            public final TextView mAuthorView;
             public final TextView mContentView;
             public final ImageView mImageView;
             public Book mItem;
@@ -285,7 +285,7 @@ public class BookListActivity extends AppCompatActivity
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
+                mAuthorView = (TextView) view.findViewById(R.id.id);
                 mImageView = (ImageView) view.findViewById(R.id.imageView);
                 mContentView = (TextView) view.findViewById(R.id.content);
             }

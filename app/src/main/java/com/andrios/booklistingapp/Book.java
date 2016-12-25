@@ -54,4 +54,23 @@ private static final String TAG = "Book: ";
     }
 
 
+    public String getAuthor() {
+        String author = "";
+        if(authorList.size() > 2){
+            author = authorList.get(0) + ", ";
+            author = author + authorList.get(1);
+            String numberAuthors = ", and " + (authorList.size() - 2) + " more";
+            author = author + numberAuthors;
+        }else if(authorList.size() == 0){
+            author = "No Authors Listed.";
+        }else{
+            for(int i = 0; i<authorList.size(); i++){
+                author = author + authorList.get(i);
+                if(i+1 < authorList.size()){
+                    author = author + ", ";
+                }
+            }
+        }
+        return author;
+    }
 }
