@@ -130,10 +130,20 @@ public final class QueryUtils {
                 }else{
                     description = "No Description Listed";
                 }
-                JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
-                String smallThumbUrl = imageLinks.getString("smallThumbnail");
-                String thumbUrl = imageLinks.getString("thumbnail");
 
+
+                JSONObject imageLinks;
+                String smallThumbUrl;
+                String thumbUrl;
+
+                if (volumeInfo.has("imageLinks") && !volumeInfo.isNull("imageLinks")) {
+                    imageLinks = volumeInfo.getJSONObject("imageLinks");
+                    smallThumbUrl = imageLinks.getString("smallThumbnail");
+                    thumbUrl = imageLinks.getString("thumbnail");
+                }else{
+                    smallThumbUrl = "empty";
+                    thumbUrl = "empty";
+                }
 
                 books.add(new Book(id, title, authorList, publisher, publishDate, description, smallThumbUrl, thumbUrl));
                 Log.d(TAG, "extractBooks: Added Book" + books.get(i).getTitle());
