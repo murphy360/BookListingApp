@@ -9,8 +9,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -63,14 +61,6 @@ public class BookListActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         emptyText = (TextView) findViewById(R.id.emptytext);
@@ -226,8 +216,8 @@ public class BookListActivity extends AppCompatActivity
             holder.mContentView.setText(mValues.get(position).getTitle());
 
 
-            BitmapWorkerTask asyncBitmap = new BitmapWorkerTask(holder.mImageView, getApplicationContext(), holder.mItem);
-            asyncBitmap.execute();
+            BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(holder.mImageView, getApplicationContext(), holder.mItem);
+            bitmapWorkerTask.execute();
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override

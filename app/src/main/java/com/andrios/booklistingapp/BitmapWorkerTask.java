@@ -1,6 +1,7 @@
 package com.andrios.booklistingapp;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -41,10 +42,10 @@ class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
         Bitmap b;
         Log.d(TAG, "doInBackground: Book ID: " + book.getFilePath(context));
         File file = new File(book.getFilePath(context));
-        if(file.exists()){
+        if (file.exists()) {
             Log.d(TAG, "doInBackground: File Exists");
             b = decodeSampledBitmapFromFile(file, 100, 100);
-        }else{
+        } else {
             Log.d(TAG, "doInBackground: File Doesn'd Exist");
             b = QueryUtils.downloadImage(book.getImageUrl());
             writeBitmapToFile(b, book.getFilePath(context));
@@ -53,11 +54,13 @@ class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
     }
 
     @Override
-    protected void onPreExecute(){
+    protected void onPreExecute() {
         File file = new File(book.getFilePath(context));
-        if(!file.exists()) {
+        if (!file.exists()) {
             final ImageView imageView = imageViewReference.get();
-            imageView.setImageResource(R.drawable.placeholder_book);
+            Resources r = context.getResources();
+            Bitmap b = BitmapFactory.decodeResource(r, R.drawable.placeholder_book);
+            imageView.setImageDrawable(new AsyncDrawable(r, b, this));
         }
     }
 
@@ -70,10 +73,13 @@ class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
             final BitmapWorkerTask bitmapWorkerTask =
                     getBitmapWorkerTask(imageView);
 
-            Log.d(TAG, "onPostExecute: this == workertask" + this.equals(bitmapWorkerTask) );
+            Log.d(TAG, "onPostExecute: this == workertask" + this.equals(bitmapWorkerTask));
             Log.d(TAG, "imageView != null " + imageView.equals(null));
             //TODO Examples had me checking this:  if (this == bitmapWorkerTask && imageView != null) {
+
+
             imageView.setImageBitmap(bitmap);
+
 
         }
     }
@@ -95,7 +101,7 @@ class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
     }
 
 
-    private void writeBitmapToFile(Bitmap bitmap, String filename){
+    private void writeBitmapToFile(Bitmap bitmap, String filename) {
         Log.d(TAG, "writeBitmapToFile: ");
         FileOutputStream out = null;
         File f = new File(filename);
@@ -103,7 +109,7 @@ class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
             out = new FileOutputStream(f);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
             // PNG is a lossless format, the compression factor (100) is ignored
-            Log.d(TAG, "writeBitmapToFile: Last Try" );
+            Log.d(TAG, "writeBitmapToFile: Last Try");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
