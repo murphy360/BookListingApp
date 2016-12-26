@@ -40,11 +40,7 @@ public class BookListActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<ArrayList<Book>>{
 
     private static final int BOOK_LOADER_ID = 1;
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
-    private boolean mTwoPane;
+
     private static final String TAG = "Book List Activity: ";
 
     private static final int PROGRESS = 0;
@@ -82,16 +78,6 @@ public class BookListActivity extends AppCompatActivity
         recyclerView = (RecyclerView) findViewById(R.id.book_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
-
-
-
-        if (findViewById(R.id.book_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
-            mTwoPane = true;
-        }
 
 
         Log.d(TAG, "onCreate: ");
@@ -206,10 +192,8 @@ public class BookListActivity extends AppCompatActivity
             Log.d(TAG, "onLoadFinished: data ");
             setView(LIST_VIEW);
             mAdapter.add(data);
-            mAdapter.notifyDataSetChanged();
         }else{
             mAdapter.clear();
-            mAdapter.notifyDataSetChanged();
         }
     }
 
@@ -281,10 +265,12 @@ public class BookListActivity extends AppCompatActivity
             Log.d(TAG, "add: " + mValues.size());
             mValues.addAll(data);
             Log.d(TAG, "add: " + mValues.size());
+            notifyDataSetChanged();
         }
 
         public void clear() {
             mValues.clear();
+            notifyDataSetChanged();
             setView(EMPTY_TEXT);
         }
 
