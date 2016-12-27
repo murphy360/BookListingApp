@@ -72,15 +72,8 @@ class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
             final ImageView imageView = imageViewReference.get();
             final BitmapWorkerTask bitmapWorkerTask =
                     getBitmapWorkerTask(imageView);
-
-            Log.d(TAG, "onPostExecute: this == workertask" + this.equals(bitmapWorkerTask));
-            Log.d(TAG, "imageView != null " + imageView.equals(null));
             //TODO Examples had me checking this:  if (this == bitmapWorkerTask && imageView != null) {
-
-
             imageView.setImageBitmap(bitmap);
-
-
         }
     }
 
