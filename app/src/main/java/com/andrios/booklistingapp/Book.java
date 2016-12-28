@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class Book extends Object {
 
-private static final String TAG = "Book: ";
+    private static final String TAG = "Book: ";
     private String id;
     private String title;
     private ArrayList<String> authorList;
@@ -49,28 +49,28 @@ private static final String TAG = "Book: ";
 
 
     public String getFilePath(Context context) {
-        Log.d(TAG, "getFilePath: " +  context.getCacheDir() + "/" + id);
+        Log.d(TAG, "getFilePath: " + context.getCacheDir() + "/" + id);
         return context.getCacheDir() + "/" + id;
     }
 
 
     public String getAuthor() {
-        String author = "";
-        if(authorList.size() > 2){
-            author = authorList.get(0) + ", ";
-            author = author + authorList.get(1);
+        String authorListString = "";
+        if (authorList.size() > 2) {
+            authorListString = authorList.get(0) + ", ";
+            authorListString = authorListString + authorList.get(1);
             String numberAuthors = ", and " + (authorList.size() - 2) + " more";
-            author = author + numberAuthors;
-        }else if(authorList.size() == 0){
-            author = "No Authors Listed.";
-        }else{
-            for(int i = 0; i<authorList.size(); i++){
-                author = author + authorList.get(i);
-                if(i+1 < authorList.size()){
-                    author = author + ", ";
+            authorListString = authorListString + numberAuthors;
+        } else if (authorList.size() == 0) {
+            authorListString = "No Authors Listed.";
+        } else {
+            for (int i = 0; i < authorList.size(); i++) {
+                authorListString = authorListString + authorList.get(i);
+                if (i + 1 < authorList.size()) {
+                    authorListString = authorListString + ", ";
                 }
             }
         }
-        return author;
+        return authorListString;
     }
 }

@@ -45,7 +45,9 @@ class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
         if (file.exists()) {
             Log.d(TAG, "doInBackground: File Exists");
             b = decodeSampledBitmapFromFile(file, 100, 100);
-        } else {
+        } else if(book.getImageUrl().equals("empty")){
+            return BitmapFactory.decodeResource(context.getResources(), R.drawable.placeholder_book);
+        }else {
             Log.d(TAG, "doInBackground: File Doesn'd Exist");
             b = QueryUtils.downloadImage(book.getImageUrl());
             writeBitmapToFile(b, book.getFilePath(context));
