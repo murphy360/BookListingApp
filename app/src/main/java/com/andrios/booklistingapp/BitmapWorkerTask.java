@@ -58,12 +58,16 @@ class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
     @Override
     protected void onPreExecute() {
         File file = new File(book.getFilePath(context));
+        Resources resources  = context.getResources();
+        Bitmap bitmap;
+        final ImageView imageView = imageViewReference.get();
         if (!file.exists()) {
-            final ImageView imageView = imageViewReference.get();
-            Resources r = context.getResources();
-            Bitmap b = BitmapFactory.decodeResource(r, R.drawable.placeholder_book);
-            imageView.setImageDrawable(new AsyncDrawable(r, b, this));
+            bitmap = BitmapFactory.decodeResource(resources, R.drawable.placeholder_book);
+        }else{
+            bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
         }
+
+        imageView.setImageDrawable(new AsyncDrawable(resources, bitmap, this));
     }
 
     // Once complete, see if ImageView is still around and set bitmap.
@@ -75,7 +79,9 @@ class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
             final BitmapWorkerTask bitmapWorkerTask =
                     getBitmapWorkerTask(imageView);
             //TODO Examples had me checking this:  if (this == bitmapWorkerTask && imageView != null) {
-            imageView.setImageBitmap(bitmap);
+            if(bitmapWorkerTask == this){
+                imageView.setImageBitmap(bitmap);
+            }
         }
     }
 
