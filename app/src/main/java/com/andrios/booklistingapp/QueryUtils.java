@@ -171,7 +171,7 @@ public final class QueryUtils {
         try {
             jsonResponse = makeHttpRequest(url);
         } catch (IOException e) {
-            Log.e(TAG, "Error closing input stream", e);
+            Log.e(TAG, "IO Exception", e);
         }
         return jsonResponse;
     }
