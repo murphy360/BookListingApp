@@ -117,7 +117,7 @@ public class BookListActivity extends AppCompatActivity
                     getLoaderManager().initLoader(BOOK_LOADER_ID,b,this).forceLoad();
                 }else{
                     Log.d(TAG, "handleIntent: Loader != Null");
-                    getLoaderManager().restartLoader(BOOK_LOADER_ID,b,this).forceLoad();
+                    getLoaderManager().restartLoader(BOOK_LOADER_ID, b, this).forceLoad();
                 }
             }
 
@@ -178,6 +178,9 @@ public class BookListActivity extends AppCompatActivity
             Log.d(TAG, "onLoadFinished: data ");
             setView(LIST_VIEW);
             mAdapter.add(data);
+            //TODO I would assume recyclerView Should do this automatically at notifyDataSetchanged().
+            //After Searching for second item, doesn't show.
+            recyclerView.scrollToPosition(0);
         }else{
             mAdapter.clear();
         }
