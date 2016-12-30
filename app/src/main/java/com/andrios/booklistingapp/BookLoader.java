@@ -16,7 +16,6 @@ public class BookLoader extends AsyncTaskLoader<ArrayList<Book>> {
 
     public BookLoader(Context context, String url) {
         super(context);
-        // TODO: Finish implementing this constructor
         this.mUrl = url;
     }
 
@@ -28,8 +27,6 @@ public class BookLoader extends AsyncTaskLoader<ArrayList<Book>> {
     @Override
     public ArrayList<Book> loadInBackground() {
         ArrayList<Book> books = QueryUtils.extractBooks(mUrl);
-        //books.clear();//TODO TEST LINE if no books returned.
-
         return books;
     }
 }
