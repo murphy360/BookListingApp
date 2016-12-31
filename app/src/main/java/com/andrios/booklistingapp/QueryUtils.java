@@ -8,66 +8,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
-/**
- * Helper methods related to requesting and receiving Book data from USGS.
- */
 public final class QueryUtils {
 
     private static final String TAG = "QueryUtils: ";
 
-
-    /**
-     * Create a private constructor because no one should ever create a {@link QueryUtils} object.
-     * This class is only meant to hold static variables and methods, which can be accessed
-     * directly from the class name QueryUtils (and an object instance of QueryUtils is not needed).
-     */
     private QueryUtils() {
-    }
-
-    public void DownloadFromUrl(String imageURL, String fileName) {  //this is the downloader method
-        try {
-            URL url = new URL("http://yoursite.com/&quot; + imageURL");
-            File file = new File(fileName);
-
-            long startTime = System.currentTimeMillis();
-            Log.d("ImageManager", "download begining");
-            Log.d("ImageManager", "download url:" + url);
-            Log.d("ImageManager", "downloaded file name:" + fileName);
-                        /* Open a connection to that URL. */
-            URLConnection ucon = url.openConnection();
-
-                        /*
-                         * Define InputStreams to read from the URLConnection.
-                         */
-            InputStream is = ucon.getInputStream();
-            BufferedInputStream bis = new BufferedInputStream(is);
-            FileOutputStream fos = new FileOutputStream(file);
-            int current = 0;
-            while ((current = bis.read()) != -1) {
-                fos.write(current);
-            }
-
-            fos.close();
-
-
-        } catch (IOException e) {
-            Log.d("ImageManager", "Error: " + e);
-        }
-
     }
 
     public static Bitmap downloadImage(String requestUrl) {
@@ -85,6 +40,7 @@ public final class QueryUtils {
     /**
      * Return a list of {@link Book} objects that has been built up from
      * parsing a JSON response.
+     *
      * @param requestUrl
      */
     public static ArrayList<Book> extractBooks(String requestUrl) {
@@ -101,7 +57,7 @@ public final class QueryUtils {
             Log.d(TAG, "extractBooks: " + response.toString());
             JSONArray bookObjects = response.getJSONArray("items");
             Log.d(TAG, bookObjects.toString());
-            for(int i = 0; i<bookObjects.length(); i++){
+            for (int i = 0; i < bookObjects.length(); i++) {
                 JSONObject bookObject = bookObjects.getJSONObject(i);
                 JSONObject volumeInfo = bookObject.getJSONObject("volumeInfo");
                 String id = bookObject.getString("id");
@@ -109,17 +65,17 @@ public final class QueryUtils {
                 ArrayList<String> authorList = new ArrayList<>();
                 if (volumeInfo.has("authors") && !volumeInfo.isNull("authors")) {
                     JSONArray authors = volumeInfo.getJSONArray("authors");
-                    for(int j = 0; j < authors.length(); j++){
+                    for (int j = 0; j < authors.length(); j++) {
                         authorList.add(authors.getString(j));
                     }
-                }else{
-                   authorList.add("No Authors Listed");
+                } else {
+                    authorList.add("No Authors Listed");
                 }
 
                 String publisher;
                 if (volumeInfo.has("publisher") && !volumeInfo.isNull("publisher")) {
                     publisher = volumeInfo.getString("publisher");
-                }else{
+                } else {
                     publisher = "Publisher not Listed";
                 }
                 String publishDate = volumeInfo.getString("publishedDate");
@@ -127,26 +83,22 @@ public final class QueryUtils {
                 String description;
                 if (volumeInfo.has("description") && !volumeInfo.isNull("description")) {
                     description = volumeInfo.getString("description");
-                }else{
+                } else {
                     description = "No Description Listed";
                 }
 
-
-                JSONObject imageLinks;
                 String smallThumbUrl;
                 String thumbUrl;
-
                 if (volumeInfo.has("imageLinks") && !volumeInfo.isNull("imageLinks")) {
-                    imageLinks = volumeInfo.getJSONObject("imageLinks");
+                    JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
                     smallThumbUrl = imageLinks.getString("smallThumbnail");
                     thumbUrl = imageLinks.getString("thumbnail");
-                }else{
+                } else {
                     smallThumbUrl = "empty";
                     thumbUrl = "empty";
                 }
 
                 books.add(new Book(id, title, authorList, publisher, publishDate, description, smallThumbUrl, thumbUrl));
-                Log.d(TAG, "extractBooks: Added Book" + books.get(i).getTitle());
             }
 
         } catch (JSONException e) {
@@ -162,10 +114,6 @@ public final class QueryUtils {
 
 
     public static String fetchJsonResponse(String requestUrl) {
-
-
-        Log.d(TAG, "fetchJsonResponse: ");
-        // Create URL object
         URL url = createUrl(requestUrl);
         String jsonResponse = null;
         try {
@@ -175,9 +123,8 @@ public final class QueryUtils {
         }
         return jsonResponse;
     }
-    /**
-     * Returns new URL object from the given string URL.
-     */
+
+
     private static URL createUrl(String stringUrl) {
         URL url = null;
         try {
@@ -188,13 +135,9 @@ public final class QueryUtils {
         return url;
     }
 
-    /**
-     * Make an HTTP request to the given URL and return a String as the response.
-     */
+
     private static String makeHttpRequest(URL url) throws IOException {
-        Log.d(TAG, "makeHttpRequest: ");
         String jsonResponse = "";
-        // If the URL is null, then return early.
         if (url == null) {
             return jsonResponse;
         }
@@ -214,7 +157,7 @@ public final class QueryUtils {
                 inputStream = urlConnection.getInputStream();
 
                 jsonResponse = readFromStream(inputStream);
-            } else {
+            } else {//TODO Handle Response 400
                 Log.e(TAG, "Error response code: " + urlConnection.getResponseCode());
             }
         } catch (IOException e) {
@@ -231,8 +174,6 @@ public final class QueryUtils {
     }
 
     private static Bitmap makeImageHttpRequest(URL url) throws IOException {
-        Log.d(TAG, "makeImageHttpRequest: ");
-
         HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
         Bitmap bitmap = null;
@@ -282,7 +223,4 @@ public final class QueryUtils {
         }
         return output.toString();
     }
-
-
-
 }
