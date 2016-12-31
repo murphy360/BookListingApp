@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="emptytext" />
+        android:text="@string/default_empty_text" />
 
     <ProgressBar
         android:id="@+id/book_list_progress_bar"

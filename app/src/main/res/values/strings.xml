@@ -2,4 +2,7 @@
     <string name="app_name">Book Listing App</string>
     <string name="title_book_detail">Book Detail</string>
     <string name="search_hint">Search Books</string>
+    <string name="placeholder_title">Title:</string>
+    <string name="placeholder_author">Author:</string>
+    <string name="default_empty_text">Use the search icon to find books!</string>
 </resources>
