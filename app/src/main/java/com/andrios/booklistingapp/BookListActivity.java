@@ -36,6 +36,7 @@ public class BookListActivity extends AppCompatActivity
     private static final int EMPTY_TEXT = 1;
     private static final int LIST_VIEW = 2;
     private static final int NETWORK_ERROR = 3;
+    private static final int NO_RESULTS = 3;
     private static final int MAX_RESULTS = 30;
 
     ProgressBar progressBar;
@@ -116,7 +117,7 @@ public class BookListActivity extends AppCompatActivity
             progressBar.setVisibility(View.VISIBLE);
             emptyText.setVisibility(View.GONE);
             recyclerView.setVisibility(View.GONE);
-        }else if(whichView == EMPTY_TEXT){
+        }else if(whichView == NO_RESULTS){
             progressBar.setVisibility(View.GONE);
             emptyText.setVisibility(View.VISIBLE);
             emptyText.setText(R.string.no_results);
@@ -130,6 +131,11 @@ public class BookListActivity extends AppCompatActivity
             progressBar.setVisibility(View.GONE);
             emptyText.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
+        }else if(whichView == EMPTY_TEXT){
+            progressBar.setVisibility(View.GONE);
+            emptyText.setVisibility(View.VISIBLE);
+            emptyText.setText("Use Icon Above to Start Search!");
+            recyclerView.setVisibility(View.GONE);
         }
     }
 
@@ -152,6 +158,7 @@ public class BookListActivity extends AppCompatActivity
             recyclerView.scrollToPosition(0);
         }else{
             mAdapter.clear();
+            setView(NO_RESULTS);
         }
     }
 

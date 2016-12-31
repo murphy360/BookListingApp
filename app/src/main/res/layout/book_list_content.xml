@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp">
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/cover_thumb_image_view"
@@ -36,8 +36,8 @@
             android:layout_marginLeft="@dimen/text_margin"
             android:layout_marginStart="@dimen/text_margin"
             android:layout_marginTop="5dp"
-            android:maxLines="1"
-            android:minLines="1"
+            android:maxLines="2"
+            android:minLines="2"
             android:text="@string/placeholder_author"
             android:textAppearance="?attr/textAppearanceListItem" />
 
