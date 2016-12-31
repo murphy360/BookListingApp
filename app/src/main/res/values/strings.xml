@@ -5,4 +5,6 @@
     <string name="placeholder_title">Title:</string>
     <string name="placeholder_author">Author:</string>
     <string name="default_empty_text">Use the search icon to find books!</string>
+    <string name="no_results">No Results Returned</string>
+    <string name="no_network">No Network Connection!</string>
 </resources>

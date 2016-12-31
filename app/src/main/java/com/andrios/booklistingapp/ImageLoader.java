@@ -4,8 +4,6 @@ import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import java.util.ArrayList;
-
 /**
  * Created by Corey on 11/27/2016.
  */
@@ -17,7 +15,6 @@ public class ImageLoader extends AsyncTaskLoader<Bitmap> {
 
     public ImageLoader(Context context, String url) {
         super(context);
-        // TODO: Finish implementing this constructor
         this.mUrl = url;
     }
 
@@ -29,8 +26,6 @@ public class ImageLoader extends AsyncTaskLoader<Bitmap> {
     @Override
     public Bitmap loadInBackground() {
         Bitmap bitmap = QueryUtils.downloadImage(mUrl);
-        //TODO TEST LINE if no image returned.
-
         return bitmap;
     }
 }

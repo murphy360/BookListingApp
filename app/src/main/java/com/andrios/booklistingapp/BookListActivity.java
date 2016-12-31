@@ -8,7 +8,6 @@ import android.content.Loader;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -26,14 +25,6 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.ArrayList;
 
-/**
- * An activity representing a list of Books. This activity
- * has different presentations for handset and tablet-size devices. On
- * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link BookDetailActivity} representing
- * item details. On tablets, the activity presents the list of items and
- * item details side-by-side using two vertical panes.
- */
 public class BookListActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<ArrayList<Book>>{
 
@@ -45,6 +36,7 @@ public class BookListActivity extends AppCompatActivity
     private static final int EMPTY_TEXT = 1;
     private static final int LIST_VIEW = 2;
     private static final int NETWORK_ERROR = 3;
+    private static final int MAX_RESULTS = 30;
 
     ProgressBar progressBar;
     TextView emptyText;
@@ -61,16 +53,15 @@ public class BookListActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-
         progressBar = (ProgressBar) findViewById(R.id.book_list_progress_bar);
         emptyText = (TextView) findViewById(R.id.book_list_empty_text_view);
 
         recyclerView = (RecyclerView) findViewById(R.id.book_list_recycler_view);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
 
+        mAdapter = new SimpleItemRecyclerViewAdapter(new ArrayList<Book>());
+        recyclerView.setAdapter(mAdapter);
 
-        Log.d(TAG, "onCreate: ");
         if(!isNetworkConnected()){
             setView(NETWORK_ERROR);
         }else{
@@ -78,20 +69,17 @@ public class BookListActivity extends AppCompatActivity
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
 
-        // Associate searchable configuration with the SearchView
         SearchManager searchManager =
                 (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView =
                 (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
-        Log.d(TAG, "onCreateOptionsMenu: ");
         return true;
     }
 
@@ -120,7 +108,6 @@ public class BookListActivity extends AppCompatActivity
                     getLoaderManager().restartLoader(BOOK_LOADER_ID, b, this).forceLoad();
                 }
             }
-
         }
     }
 
@@ -130,56 +117,38 @@ public class BookListActivity extends AppCompatActivity
             emptyText.setVisibility(View.GONE);
             recyclerView.setVisibility(View.GONE);
         }else if(whichView == EMPTY_TEXT){
-
             progressBar.setVisibility(View.GONE);
             emptyText.setVisibility(View.VISIBLE);
-            emptyText.setText("No Results");
+            emptyText.setText(R.string.no_results);
             recyclerView.setVisibility(View.GONE);
         }else if(whichView == NETWORK_ERROR){
-
             progressBar.setVisibility(View.GONE);
             emptyText.setVisibility(View.VISIBLE);
-            emptyText.setText("No Network");
+            emptyText.setText(R.string.no_network);
             recyclerView.setVisibility(View.GONE);
         }else if(whichView == LIST_VIEW){
-
             progressBar.setVisibility(View.GONE);
             emptyText.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
         }
     }
 
-
-
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-
-        mAdapter = new SimpleItemRecyclerViewAdapter(new ArrayList<Book>());
-        recyclerView.setAdapter(mAdapter);
-    }
-
     @Override
     public Loader<ArrayList<Book>> onCreateLoader(int id, Bundle args) {
         String baseUrl = "https://www.googleapis.com/books/v1/volumes?q=";
-        String maxResultsUrl = "&maxResults=30";
-        //TODO Allow user to choose Max Results
+        String maxResultsUrl = "&maxResults=" + MAX_RESULTS;
         String query = args.getString("query");
-        Log.d(TAG, "onCreateLoader: " + query);
         String mUrl = baseUrl+query+maxResultsUrl;
 
         setView(PROGRESS);
         return new BookLoader(this, mUrl);
-
     }
 
     @Override
     public void onLoadFinished(Loader<ArrayList<Book>> loader, ArrayList<Book> data) {
-        Log.d(TAG, "onLoadFinished: " + data.size());
         if(data.size() > 0){
-            Log.d(TAG, "onLoadFinished: data ");
             setView(LIST_VIEW);
             mAdapter.add(data);
-            //TODO I would assume recyclerView Should do this automatically at notifyDataSetchanged().
-            //After Searching for second item, doesn't show.
             recyclerView.scrollToPosition(0);
         }else{
             mAdapter.clear();
@@ -195,7 +164,6 @@ public class BookListActivity extends AppCompatActivity
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private final ArrayList<Book> mValues;
-
         public SimpleItemRecyclerViewAdapter(ArrayList<Book> items) {
             mValues = items;
         }
@@ -220,7 +188,7 @@ public class BookListActivity extends AppCompatActivity
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Not required in scope of project
+                    //TODO Not required in scope of project
                 }
             });
         }
@@ -231,11 +199,8 @@ public class BookListActivity extends AppCompatActivity
         }
 
         public void add(ArrayList<Book> data) {
-            Log.d(TAG, "add: " + mValues.size());
             mValues.clear();
-            Log.d(TAG, "add: " + mValues.size());
             mValues.addAll(data);
-            Log.d(TAG, "add: " + mValues.size());
             notifyDataSetChanged();
         }
 
@@ -269,7 +234,6 @@ public class BookListActivity extends AppCompatActivity
 
     private boolean isNetworkConnected(){
         ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
@@ -277,19 +241,14 @@ public class BookListActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy: ");
-        File dir = this.getCacheDir();
-        if (dir != null && dir.isDirectory()) {
-            deleteDir(dir);
-        }
-
+        clearCache(this.getCacheDir());
     }
-    public static boolean deleteDir(File dir) {
+    public static boolean clearCache(File dir) {
         if (dir != null && dir.isDirectory())
         {
             String[] children = dir.list();
             for (int i = 0; i < children.length; i++) {
-                boolean success = deleteDir(new File(dir, children[i]));
+                boolean success = clearCache(new File(dir, children[i]));
                 if (!success) {
                     return false;
                 }
