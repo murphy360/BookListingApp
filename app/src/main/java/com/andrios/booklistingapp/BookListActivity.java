@@ -62,10 +62,10 @@ public class BookListActivity extends AppCompatActivity
         toolbar.setTitle(getTitle());
 
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        emptyText = (TextView) findViewById(R.id.emptytext);
+        progressBar = (ProgressBar) findViewById(R.id.book_list_progress_bar);
+        emptyText = (TextView) findViewById(R.id.book_list_empty_text_view);
 
-        recyclerView = (RecyclerView) findViewById(R.id.book_list);
+        recyclerView = (RecyclerView) findViewById(R.id.book_list_recycler_view);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
 
@@ -255,9 +255,9 @@ public class BookListActivity extends AppCompatActivity
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
-                mAuthorView = (TextView) view.findViewById(R.id.id);
-                mImageView = (ImageView) view.findViewById(R.id.imageView);
-                mContentView = (TextView) view.findViewById(R.id.content);
+                mAuthorView = (TextView) view.findViewById(R.id.author_text_view);
+                mImageView = (ImageView) view.findViewById(R.id.cover_thumb_image_view);
+                mContentView = (TextView) view.findViewById(R.id.title_text_view);
             }
 
             @Override
